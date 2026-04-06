@@ -1,4 +1,4 @@
-# DAR-CPU: LCD 16x2 I2C con dsPIC33FJ32MC204
+# LCD 16x2 I2C con dsPIC33FJ32MC204
 
 Este repositorio contiene el código de ejemplo y las pruebas para usar la LCD 16x2 I2C utilizando la tarjeta de desarrollo **DAR-CPU**.
 
