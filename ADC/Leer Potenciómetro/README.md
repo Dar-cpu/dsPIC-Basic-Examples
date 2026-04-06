@@ -1,4 +1,4 @@
-# DAR-CPU: Lectura de ADC con dsPIC33FJ32MC204
+# Lectura de ADC con dsPIC33FJ32MC204
 
 Este repositorio contiene el código de ejemplo y las pruebas para leer el ADC utilizando la tarjeta de desarrollo **DAR-CPU**.
 
