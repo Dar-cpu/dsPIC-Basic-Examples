@@ -2,7 +2,7 @@
 
 Colección de ejemplos básicos y funcionales en **C** para microcontroladores **dsPIC** de Microchip.
 
-Este repositorio está pensado para usarse con la tarjeta de desarrollo ![board](Images/tarjeta.jpeg)  
+Este repositorio está pensado para usarse con la tarjeta de desarrollo: ![board](Images/tarjeta.jpeg)  
 
 ---
 
@@ -39,8 +39,7 @@ Cada periférico tiene su propia carpeta con un ejemplo práctico completo:
 
 - Cada carpeta contiene:Código fuente (main.c) para simplificar configuraciones
 - README.md con explicación
-- Imágenes de pruebas
-  ```markdown
+- Imágenes de pruebas:
   ![Ejemplos](Images/dar.jpeg)
 
 
