@@ -1,4 +1,4 @@
-# DAR-CPU: Comunicación serial con dsPIC33FJ32MC204
+# Comunicación serial con dsPIC33FJ32MC204
 
 
 
