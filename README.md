@@ -2,8 +2,7 @@
 
 Colección de ejemplos básicos y funcionales en **C** para microcontroladores **dsPIC** de Microchip.
 
-Este repositorio está pensado para usarse con la tarjeta de desarrollo
-  ```markdown ![board](Images/tarjeta.jpeg)  ```
+Este repositorio está pensado para usarse con la tarjeta de desarrollo ![board](Images/tarjeta.jpeg)  
 
 ---
 
