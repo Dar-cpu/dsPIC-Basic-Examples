@@ -1,4 +1,4 @@
-# DAR-CPU: Teclado 4x4 con dsPIC33FJ32MC204
+# Teclado 4x4 con dsPIC33FJ32MC204
 
 Este repositorio contiene el código de ejemplo y las pruebas para un teclado 4x4 utilizando la tarjeta de desarrollo **DAR-CPU**.
 
