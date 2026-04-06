@@ -13,15 +13,15 @@ Cada periférico tiene su propia carpeta con un ejemplo práctico completo:
 | Periférico              | Carpeta                            | Descripción                              |
 |-------------------------|------------------------------------|------------------------------------------|
 | ADC                     | `adc/leer-potenciometro`           | Lectura potenciómetro / valor analógico  |
-| UART                    | `uart`                             | Comunicación serial con PC               |
-| Timers                  | `timers`                           | Uso básico de Timer1                     |
-| LCD (con I2C)           | `LCD I2C/Texto simple`             | Mostrar texto en LCD con adaptador I2C   |
-| LCD (sin I2C)           | `LCD sin I2C/Texto simple`         | Control directo de LCD 16x2              |
-| Teclado                 | `Teclado 4X4/Prueba teclado`       | Lectura de teclado matricial 4x4         |
-| Motor Paso a Paso       | `Motor Paso a Paso/Módulo ULN2003` | Control de motor stepper                 |
-| SPWM                    | `SPWM/Generación simple`           | Generación de señal SPWM                 |
-| EEPROM (Lectura)        | `Leer EEPROM/Leer 24C512C`         | Lectura de memoria EEPROM externa        |
-| EEPROM (Escritura)      | `Escribir EEPROM/Grabar audio`     | Escritura de EEPROM (ejemplo grabación)  |
+| UART                    | `uart/prueba-uart`                 | Comunicación serial con PC               |
+| Timers                  | `timers/timer1`                    | Uso básico de Timer1                     |
+| LCD (con I2C)           | `lcd-i2c/texto-simple`             | Mostrar texto en LCD con adaptador I2C   |
+| LCD (sin I2C)           | `lcd-sin-i2c/texto-simple`         | Control directo de LCD 16x2              |
+| Teclado                 | `teclado-4x4/prueba-teclado`       | Lectura de teclado matricial 4x4         |
+| Motor Paso a Paso       | `motor-paso-a-paso/modulo-uln2003` | Control de motor stepper                 |
+| SPWM                    | `spwm/generacion-simple`           | Generación de señal SPWM                 |
+| EEPROM (Lectura)        | `eeprom-lectura/leer-24c512c`      | Lectura de memoria EEPROM externa        |
+| EEPROM (Escritura)      | `eeprom-escritura/grabar-audio`    | Escritura de EEPROM (ejemplo grabación)  |
 
 ---
 
