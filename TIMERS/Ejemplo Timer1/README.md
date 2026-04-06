@@ -1,4 +1,4 @@
-# DAR-CPU: Uso de Timer1 con dsPIC33FJ32MC204
+# Uso de Timer1 con dsPIC33FJ32MC204
 
 Este repositorio contiene el código de ejemplo y las pruebas para usar el Timer1 utilizando la tarjeta de desarrollo **DAR-CPU**.
 
