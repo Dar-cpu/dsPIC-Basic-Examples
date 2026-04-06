@@ -1,4 +1,4 @@
-# DAR-CPU: Programación de EEPROM con dsPIC33FJ32MC204
+# Programación de EEPROM con dsPIC33FJ32MC204
 
 
 
