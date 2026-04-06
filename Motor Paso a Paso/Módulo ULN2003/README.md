@@ -1,4 +1,4 @@
-# DAR-CPU: Control Motor paso a paso con dsPIC33FJ32MC204
+# Control Motor paso a paso con dsPIC33FJ32MC204
 
 Este repositorio contiene el código de ejemplo y las pruebas para controlar un motor paso a paso utilizando la tarjeta de desarrollo **DAR-CPU**.
 
