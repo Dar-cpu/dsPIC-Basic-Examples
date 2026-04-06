@@ -34,7 +34,7 @@ Este repositorio contiene el código de ejemplo y las pruebas para leer una memo
 ![TXS0108E](docs/con_TXS0108E.png)
 
 ### Pasos 
-- Los datos que se cargaon a la EEPROM están en [Escribir EEPROM](https://github.com/Dar-cpu/dsPIC-Basic-Examples/tree/main/Escribir%20EEPROM) 
+- Los datos que se cargaon a la EEPROM están en [Escribir EEPROM](https://github.com/Dar-cpu/dsPIC-Basic-Examples/tree/main/eeprom-escritura/grabar-audio) 
 
 - Carga el codigo a la la tarjeta de desarrollo **DAR-CPU** luego la LCD mostrará el texto *"Reproduciendo!, DAR-CPU Audio"*.
 
