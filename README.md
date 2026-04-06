@@ -12,9 +12,9 @@ Cada periférico tiene su propia carpeta con un ejemplo práctico completo:
 
 | Periférico              | Carpeta                            | Descripción                              |
 |-------------------------|------------------------------------|------------------------------------------|
-| ADC                     | `ADC/Leer Potenciómetro`           | Lectura potenciómetro / valor analógico  |
-| UART                    | `UART/Prueba UART`                 | Comunicación serial con PC               |
-| Timers                  | `TIMERS/Ejemplo Timer1`            | Uso básico de Timer1                     |
+| ADC                     | `adc/leer-potenciometro`           | Lectura potenciómetro / valor analógico  |
+| UART                    | `uart`                             | Comunicación serial con PC               |
+| Timers                  | `timers`                           | Uso básico de Timer1                     |
 | LCD (con I2C)           | `LCD I2C/Texto simple`             | Mostrar texto en LCD con adaptador I2C   |
 | LCD (sin I2C)           | `LCD sin I2C/Texto simple`         | Control directo de LCD 16x2              |
 | Teclado                 | `Teclado 4X4/Prueba teclado`       | Lectura de teclado matricial 4x4         |
