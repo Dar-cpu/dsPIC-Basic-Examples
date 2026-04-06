@@ -1,0 +1,1 @@
+El archivo de audio .raw debe estar en la misma carpeta que donde ejecutes el grabar_audio.py. 
