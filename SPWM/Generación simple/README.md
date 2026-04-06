@@ -1,4 +1,4 @@
-# DAR-CPU: Generación SPWM con dsPIC33FJ32MC204
+# Generación SPWM con dsPIC33FJ32MC204
 
 
 
