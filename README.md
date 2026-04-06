@@ -37,9 +37,10 @@ Cada periférico tiene su propia carpeta con un ejemplo práctico completo:
    
 4. Compila y programa en tu tarjeta de desarrollo.
 
-Cada carpeta contiene:Código fuente (main.c) para simplificar configuraciones
-  README.md con explicación
-  Imágenes de pruebas
-
+- Cada carpeta contiene:Código fuente (main.c) para simplificar configuraciones
+- README.md con explicación
+- Imágenes de pruebas
+  ```markdown
+  ![Ejemplos](Images/dar.jpeg)
 
 
