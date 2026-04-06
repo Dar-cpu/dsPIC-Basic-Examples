@@ -1,4 +1,4 @@
-# DAR-CPU: Lectura de EEPROM con dsPIC33FJ32MC204
+# Lectura de EEPROM con dsPIC33FJ32MC204
 
 
 
