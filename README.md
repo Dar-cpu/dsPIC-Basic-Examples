@@ -40,6 +40,7 @@ Cada periférico tiene su propia carpeta con un ejemplo práctico completo:
 - Cada carpeta contiene:Código fuente (main.c) para simplificar configuraciones
 - README.md con explicación
 - Imágenes de pruebas:
+  
   ![Ejemplos](Images/dar.jpeg)
 
 
