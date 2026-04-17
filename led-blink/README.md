@@ -21,9 +21,13 @@ Este repositorio contiene el código de ejemplo y las pruebas de hardware para c
 ## Resultados de Pruebas
 
 
-### 1. Señal de la conmutación de Led en osciloscopio
+### 1. Señal de la conmutación de Led en osciloscopio para 1hz o 500ms
 
-![LED](docs/osc_led.png)
+![LED](docs/osc_led1.png)
+
+### 2. Señal de la conmutación de Led en osciloscopio para 2hz o 250ms
+
+![LED](docs/osc_led2.png)
 
 
 ### 2. Gift del LED
