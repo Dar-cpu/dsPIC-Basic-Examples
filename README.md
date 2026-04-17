@@ -22,7 +22,8 @@ Cada periférico tiene su propia carpeta con un ejemplo práctico completo:
 | SPWM                    | `spwm/generacion-simple`           | Generación de señal SPWM                 |
 | EEPROM (Lectura)        | `eeprom-lectura/leer-24c512c`      | Lectura de memoria EEPROM externa        |
 | EEPROM (Escritura)      | `eeprom-escritura/grabar-audio`    | Escritura de EEPROM (ejemplo grabación)  |
-
+| LED Blink               | `led-blink`                        | Conmutar un LED                          |
+ 
 ---
 
 ## Cómo usar
