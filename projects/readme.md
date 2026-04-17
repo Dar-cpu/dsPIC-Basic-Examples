@@ -17,6 +17,6 @@ Este carpeta contiene proyectos de distintas áreas utilizando la tarjeta de des
 ### 1. Electrónica de Potencia
 - Estudia la conversión y control de energía eléctrica mediante dispositivos semiconductores operados en conmutación, se fundamenta en el análisis de convertidores estáticos no lineales (DC-DC, AC-DC, DC-AC y AC-AC), emplea dispositivos como MOSFET, IGBT y diodos de potencia, donde el diseño considera simultáneamente las condiciones de conducción, conmutación, pérdidas, y limitaciones térmicas.
   
-![ELEC](docs/power.png)
+![ELEC](img/power.png)
 
 
