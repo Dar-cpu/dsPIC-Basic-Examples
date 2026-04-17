@@ -1,2 +1,2 @@
 
-Convertidores electónicos
+Convertidores electrónicos
