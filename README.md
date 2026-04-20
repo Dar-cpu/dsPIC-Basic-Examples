@@ -23,7 +23,9 @@ Cada periférico tiene su propia carpeta con un ejemplo práctico completo:
 | EEPROM (Lectura)        | `eeprom-lectura/leer-24c512c`      | Lectura de memoria EEPROM externa        |
 | EEPROM (Escritura)      | `eeprom-escritura/grabar-audio`    | Escritura de EEPROM (ejemplo grabación)  |
 | LED Blink               | `led-blink`                        | Conmutar un LED                          |
- 
+| Plantilla               | `universal-template`               | Plantilla Universal dsPIC33 ep/fj        |
+| Proyectos               | `projects`                         | Proyectos de electrónica con dsPIC       |
+
 ---
 
 ## Cómo usar
