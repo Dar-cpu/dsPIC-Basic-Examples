@@ -16,9 +16,8 @@ Actualmente la versión utilizada para el desarrollo y validación de los ejempl
 
 La primera revisión de la tarjeta se conserva como referencia histórica del desarrollo.
 
-<!-- Mantener aquí la imagen que ya tienes actualmente de la V1I1 -->
 
-![dsPIC33FJ32MC204 Development Board V1I1](RUTA_ACTUAL_DE_LA_IMAGEN_V1I1)
+![dsPIC33FJ32MC204 Development Board V1I1](Images/tarjeta.jpeg)
 
 ### PCB V1I2 — Versión actual
 
