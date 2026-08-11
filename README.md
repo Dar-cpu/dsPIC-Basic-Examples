@@ -1,112 +1,136 @@
 # dsPIC-Basic-Examples
 
-Colección de ejemplos prácticos y funcionales en **C** para microcontroladores **dsPIC33** de Microchip.
+Colección de ejemplos prácticos en C para aprender, probar y reutilizar los periféricos del **Microchip dsPIC33FJ32MC204** sobre hardware real.
 
-El repositorio está orientado principalmente al **dsPIC33FJ32MC204** y a una tarjeta de desarrollo propia utilizada para estudiar periféricos, validar hardware y construir proyectos más completos a partir de ejemplos pequeños y reutilizables.
+El repositorio acompaña a la tarjeta de desarrollo dsPIC33 y funciona como una guía progresiva: comienza con GPIO y temporización, continúa con ADC, UART, I²C, pantallas y PWM, y llega a demostraciones integradas como reproducción de audio y un mini osciloscopio con TFT.
 
-Los proyectos están desarrollados principalmente con **MPLAB X IDE** y el compilador **XC16**.
-
----
+Los ejemplos están desarrollados principalmente con **MPLAB X IDE** y **XC16**, usando un cristal externo de 8 MHz y `FCY = 40 MHz`.
 
 ## Tarjeta de desarrollo
 
-La revisión utilizada actualmente para el desarrollo y validación de nuevos ejemplos es la **PCB V1I2**.
+### PCB V1I2 — versión actual
 
-### PCB V1I1 — Descontinuada
-
-La primera revisión se conserva como referencia histórica del desarrollo.
+La **V1I2** es la plataforma de referencia para las nuevas pruebas y ejemplos.
 
 <p align="center">
-  <img src="Images/tarjeta.jpeg" alt="dsPIC33FJ32MC204 Development Board V1I1" width="620">
+  <img src="Images/dspic33fj_dev_V1I2.jpeg" alt="Tarjeta de desarrollo dsPIC33FJ32MC204 V1I2" width="680">
 </p>
 
-### PCB V1I2 — Versión actual
+Características disponibles en la tarjeta:
 
-Revisión actual de la tarjeta utilizada para los nuevos ejemplos y pruebas.
+- Zócalo/plataforma para dsPIC33FJ32MC204 y alternativa de montaje dsPIC33EP32MC204.
+- Cristal externo de 8 MHz.
+- Conector ICSP para programación y depuración.
+- Pulsador de reset.
+- LED de sistema y LED de usuario.
+- Pines de 5 V con protección PTC de 500 mA.
+- Salida regulada de 3.3 V independiente.
+- Múltiples puntos de GND para prototipado.
+
+### PCB V1I1 — descontinuada
+
+La primera revisión se conserva como referencia histórica, pero los ejemplos nuevos se validan sobre V1I2.
 
 <p align="center">
-  <img src="Images/dspic33fj_dev_V1I2.jpeg" alt="dsPIC33FJ32MC204 Development Board V1I2" width="620">
+  <img src="Images/tarjeta.jpeg" alt="Tarjeta de desarrollo dsPIC33FJ32MC204 V1I1" width="620">
 </p>
 
-| Revisión | Estado | Uso |
+| Revisión | Estado | Uso recomendado |
 | --- | --- | --- |
-| V1I1 | Descontinuada | Conservada como referencia |
-| **V1I2** | **Actual** | Desarrollo y validación de nuevos ejemplos |
+| V1I1 | Descontinuada | Referencia de desarrollo |
+| **V1I2** | **Actual** | Nuevos montajes, pruebas y ejemplos |
 
----
+## Compatibilidad importante
 
-## Hardware principal
+La mayoría del firmware de este repositorio está escrito específicamente para **dsPIC33FJ32MC204**. La tarjeta admite también el dsPIC33EP32MC204, pero sus registros analógicos, Configuration Bits y algunas funciones periféricas no son idénticos.
 
-- **MCU principal:** Microchip dsPIC33FJ32MC204
-- **MCU alternativo soportado por la PCB:** dsPIC33EP32MC204
-- **Arquitectura:** dsPIC33 de 16 bits
-- **Oscilador externo:** cristal de 8 MHz
-- **Programación / Debug:** ICSP
-- **UART:** comunicación serial
-- **I²C:** periféricos y dispositivos externos
-- **SPI:** comunicaciones síncronas y pantallas TFT
-- **ADC:** adquisición de señales analógicas
-- **Timers:** temporización, muestreo y generación de eventos
-- **PWM:** aplicaciones generales, control de potencia y motores
-- **PPS:** Peripheral Pin Select para periféricos remapeables
-
-> **Importante sobre ICSP:** la plantilla universal conserva la configuración correspondiente a cada MCU. En esta PCB, el **dsPIC33FJ32MC204 utiliza PGD1/PGC1** y el **dsPIC33EP32MC204 utiliza PGD3/PGC3**. No conviene cambiar este ajuste sin verificar primero qué dispositivo está montado.
-
----
-
-## Ejemplos destacados recientes
-
-### TFT ST7735 — Imágenes y logos
-
-Ejemplo para controlar una pantalla **ST7735/ST7735S 128x160** mediante SPI1 y mostrar imágenes compactadas a **2 bits por píxel** con una paleta RGB565 de cuatro colores.
-
-Incluye además un conversor gráfico en Python para transformar imágenes PNG/JPG/BMP/GIF/WEBP directamente a un header C almacenado en Flash/PSV.
-
-**[Ver ejemplo `tft-st7735/mostrar-logo`](tft-st7735/mostrar-logo)**
-
-<p align="center">
-  <img src="tft-st7735/mostrar-logo/images/prueba_tft.jpeg" alt="Logo mostrado en TFT ST7735" width="430">
-</p>
-
-### ADC + TFT — Mini osciloscopio
-
-Ejemplo de adquisición utilizando el **ADC de 12 bits**, Timer3 y una TFT ST7735 para visualizar una señal analógica en tiempo real.
-
-Incluye captura de 256 muestras, visualización de 128 puntos, frecuencias de muestreo seleccionables, escalas verticales, trigger por software y modos **RUN/HOLD** controlados mediante cuatro pulsadores.
-
-**[Ver ejemplo `tft-st7735/adc-tft`](tft-st7735/adc-tft)**
-
-<p align="center">
-  <img src="tft-st7735/adc-tft/images/tft.jpeg" alt="Mini osciloscopio ADC en TFT ST7735" width="430">
-</p>
-
----
-
-## Contenido
-
-Cada periférico o función tiene su propia carpeta con uno o más ejemplos prácticos.
-
-| Categoría | Ejemplo | Descripción |
+| MCU | Uso en el repositorio | Puerto ICSP de la tarjeta |
 | --- | --- | --- |
-| ADC | [adc/leer-potenciometro](adc/leer-potenciometro) | Lectura de potenciómetro / señal analógica |
-| UART | [uart/prueba-uart](uart/prueba-uart) | Comunicación serial con PC |
-| Timers | [timers/timer1](timers/timer1) | Uso básico de Timer1 |
-| LCD + I²C | [lcd-i2c/texto-simple](lcd-i2c/texto-simple) | Mostrar texto en LCD mediante adaptador I²C |
-| LCD paralelo | [lcd-sin-i2c/texto-simple](lcd-sin-i2c/texto-simple) | Control directo de LCD 16x2 |
-| Teclado | [teclado-4x4/prueba-teclado](teclado-4x4/prueba-teclado) | Lectura de teclado matricial 4x4 |
-| Motor paso a paso | [motor-paso-a-paso/modulo-uln2003](motor-paso-a-paso/modulo-uln2003) | Control de motor stepper mediante ULN2003 |
-| SPWM | [spwm/generacion-simple](spwm/generacion-simple) | Generación de señal SPWM |
-| EEPROM lectura | [eeprom-lectura/leer-24c512c](eeprom-lectura/leer-24c512c) | Lectura de memoria EEPROM externa |
-| EEPROM escritura | [eeprom-escritura/grabar-audio](eeprom-escritura/grabar-audio) | Escritura de EEPROM |
-| LED | [led-blink](led-blink) | Ejemplo básico de conmutación de un LED |
-| TFT ST7735 | [tft-st7735/mostrar-logo](tft-st7735/mostrar-logo) | Mostrar logos e imágenes mediante SPI y RGB565/2 bpp |
-| ADC + TFT | [tft-st7735/adc-tft](tft-st7735/adc-tft) | Mini osciloscopio con ADC de 12 bits y ST7735 |
-| Plantilla | [universal-template](universal-template) | Plantilla base para dsPIC33FJ / dsPIC33EP |
-| Proyectos | [projects](projects) | Proyectos completos de electrónica con dsPIC |
+| dsPIC33FJ32MC204 | Objetivo principal de los ejemplos | PGD1 / PGC1 |
+| dsPIC33EP32MC204 | Plantilla universal y adaptaciones específicas | PGD3 / PGC3 |
 
----
+> No cambies el puerto ICSP sin comprobar primero qué microcontrolador está montado. Una configuración incorrecta puede impedir la siguiente conexión del programador.
 
-## Cómo usar
+## Antes de conectar hardware externo
+
+- Los GPIO del dsPIC trabajan con lógica de **3.3 V**.
+- No apliques 5 V a una entrada sin verificar tolerancia o añadir conversión de nivel.
+- Las entradas ADC deben permanecer entre `AVSS` y `AVDD`.
+- Une GND entre la tarjeta y los instrumentos o módulos externos.
+- No alimentes motores, altavoces ni otras cargas de potencia directamente desde un GPIO.
+- Comprueba el pinout en el README de cada ejemplo antes de energizar el montaje.
+
+## Ruta de aprendizaje recomendada
+
+| Orden | Ejemplo | Periféricos / concepto | Nivel |
+| ---: | --- | --- | --- |
+| 1 | [LED Blink](led-blink) | GPIO y retardos | Inicial |
+| 2 | [Timer1](timers/timer1) | Timer e interrupciones | Inicial |
+| 3 | [ADC + potenciómetro](adc/leer-potenciometro) | ADC de 10 bits | Inicial |
+| 4 | [UART](uart/prueba-uart) | UART1 y PPS | Inicial |
+| 5 | [LCD paralelo](lcd-sin-i2c/texto-simple) | GPIO y HD44780 | Inicial |
+| 6 | [LCD por I²C](lcd-i2c/texto-simple) | I²C1 y PCF8574 | Intermedio |
+| 7 | [Teclado 4×4](teclado-4x4/prueba-teclado) | Matriz y escaneo de GPIO | Intermedio |
+| 8 | [Motor + ULN2003](motor-paso-a-paso/modulo-uln2003) | Secuencias de medio paso | Intermedio |
+| 9 | [SPWM](spwm/generacion-simple) | Motor Control PWM e ISR | Intermedio |
+| 10 | [Grabar audio en EEPROM](eeprom-escritura/grabar-audio) | UART, Python, I²C y EEPROM | Avanzado |
+| 11 | [Reproducir audio](eeprom-lectura/leer-24c512c) | EEPROM, buffer, Timer y PWM | Avanzado |
+| 12 | [Mostrar imágenes en TFT](tft-st7735/mostrar-logo) | SPI1, RGB565, Flash/PSV y Python | Avanzado |
+| 13 | [Mini osciloscopio ADC + TFT](tft-st7735/adc-tft) | ADC de 12 bits, timers, SPI y UI | Avanzado |
+
+## Ejemplos destacados
+
+### Imágenes y logos en TFT ST7735
+
+Controla una pantalla ST7735/ST7735S de 128×160 mediante SPI1. Incluye una herramienta gráfica en Python que convierte PNG, JPG, BMP, GIF o WEBP a una imagen compactada de **2 bits por píxel** con paleta RGB565, almacenada en Flash/PSV.
+
+**[Abrir `tft-st7735/mostrar-logo`](tft-st7735/mostrar-logo)**
+
+<p align="center">
+  <img src="tft-st7735/mostrar-logo/images/prueba_tft.jpeg" alt="Logo mostrado en una TFT ST7735" width="430">
+</p>
+
+### Mini osciloscopio ADC + TFT
+
+Captura bloques de 256 muestras con el ADC de 12 bits, representa 128 puntos en pantalla y permite cambiar muestreo, escala, trigger y RUN/HOLD mediante cuatro pulsadores.
+
+**[Abrir `tft-st7735/adc-tft`](tft-st7735/adc-tft)**
+
+<p align="center">
+  <img src="tft-st7735/adc-tft/images/tft.jpeg" alt="Mini osciloscopio con dsPIC33 y TFT ST7735" width="430">
+</p>
+
+## Índice por categoría
+
+| Categoría | Carpeta | Resultado principal |
+| --- | --- | --- |
+| GPIO | [led-blink](led-blink) | LED alternando entre 1 Hz y 2 Hz |
+| Timers | [timers/timer1](timers/timer1) | LED a 1 Hz con bucle principal libre |
+| ADC | [adc/leer-potenciometro](adc/leer-potenciometro) | Potenciómetro controla velocidad del LED |
+| UART | [uart/prueba-uart](uart/prueba-uart) | Mensaje a PC a 9600 8N1 |
+| LCD paralelo | [lcd-sin-i2c/texto-simple](lcd-sin-i2c/texto-simple) | Texto en LCD 16×2 usando seis GPIO |
+| LCD + I²C | [lcd-i2c/texto-simple](lcd-i2c/texto-simple) | Texto mediante PCF8574 y dos señales |
+| Teclado | [teclado-4x4/prueba-teclado](teclado-4x4/prueba-teclado) | Detección de 16 teclas por matriz |
+| Motor | [motor-paso-a-paso/modulo-uln2003](motor-paso-a-paso/modulo-uln2003) | Giro continuo con secuencia de medio paso |
+| PWM | [spwm/generacion-simple](spwm/generacion-simple) | SPWM complementaria y señal filtrada |
+| EEPROM escritura | [eeprom-escritura/grabar-audio](eeprom-escritura/grabar-audio) | 64 000 muestras cargadas desde Python |
+| EEPROM lectura | [eeprom-lectura/leer-24c512c](eeprom-lectura/leer-24c512c) | Audio de 8 bits reproducido mediante PWM |
+| TFT | [tft-st7735/mostrar-logo](tft-st7735/mostrar-logo) | Logo compactado en una ST7735 |
+| Instrumentación | [tft-st7735/adc-tft](tft-st7735/adc-tft) | Forma de onda ADC en tiempo real |
+| Base de proyecto | [universal-template](universal-template) | Proyectos FJ/EP y simulación Proteus |
+| Proyectos integrados | [projects](projects) | Área para desarrollos completos |
+
+## Herramientas
+
+- Microchip MPLAB X IDE.
+- Microchip XC16 Compiler.
+- Programador/debugger compatible con ICSP.
+- Python 3 en los ejemplos que incluyen herramientas de PC.
+- Instrumentación opcional: multímetro, osciloscopio, generador de funciones y analizador lógico.
+
+## Cómo usar un ejemplo básico
+
+Los ejemplos básicos guardan el firmware en `src/main.c` e incluyen los Configuration Bits dentro del mismo archivo.
 
 1. Clona el repositorio:
 
@@ -114,70 +138,45 @@ Cada periférico o función tiene su propia carpeta con uno o más ejemplos prá
    git clone https://github.com/Dar-cpu/dsPIC-Basic-Examples.git
    ```
 
-2. Abre **MPLAB X IDE**.
+2. En MPLAB X crea un proyecto **Standalone Project**.
+3. Selecciona `dsPIC33FJ32MC204` y el compilador XC16.
+4. Añade el `src/main.c` del ejemplo.
+5. Lee su `README.md` y realiza las conexiones con la alimentación apagada.
+6. Compila y programa mediante ICSP.
+7. Compara el resultado con las fotografías o capturas incluidas en `docs/` o `images/`.
 
-3. Crea un proyecto nuevo o utiliza la configuración correspondiente al ejemplo.
+Los ejemplos TFT contienen varios módulos `.c`/`.h`; añade todos los archivos indicados en su documentación. La carpeta `universal-template` ya contiene proyectos MPLAB X completos.
 
-4. Selecciona el microcontrolador instalado en la tarjeta. Para la mayoría de los ejemplos:
+## Estructura de documentación
 
-   ```text
-   dsPIC33FJ32MC204
-   ```
-
-5. Selecciona el compilador **XC16**.
-
-6. Añade al proyecto los archivos `.c` y `.h` indicados en el README del ejemplo.
-
-7. Compila y programa el microcontrolador mediante ICSP.
-
-> Revisa siempre el `README.md` de cada ejemplo antes de conectar hardware externo. Allí se documentan pines, alimentación, señales de prueba y configuraciones específicas.
-
----
-
-## Estructura de los ejemplos
-
-Dependiendo de su complejidad, una carpeta puede contener:
+Cada ejemplo procura incluir:
 
 ```text
 nombre-del-ejemplo/
-├── README.md
-├── main.c
-├── config_bits.c
-├── modulo.c
-├── modulo.h
-└── images/
-    └── prueba.jpeg
+├── README.md            # Objetivo, conexiones, funcionamiento y prueba
+├── src/
+│   └── main.c           # Firmware del ejemplo básico
+└── docs/                # Fotos, diagramas y mediciones reales
 ```
 
-Los archivos más comunes son:
-
-- `main.c` — aplicación principal.
-- `config_bits.c` — Configuration Bits del microcontrolador.
-- `*.c` / `*.h` — drivers o módulos específicos del ejemplo.
-- `README.md` — funcionamiento, conexiones y procedimiento de prueba.
-- `images/` — fotografías, capturas de osciloscopio y resultados reales.
-- Scripts o herramientas auxiliares cuando el ejemplo los requiere.
-
-El objetivo es mantener cada ejemplo lo más **independiente, reproducible y sencillo de reutilizar** posible.
-
----
+Los ejemplos más completos pueden añadir drivers, headers, scripts de Python, dependencias y una carpeta `images/`.
 
 ## Organización del repositorio
 
 ```text
 dsPIC-Basic-Examples/
-├── Images/                  # Imágenes generales de las PCB
+├── Images/                  # Fotografías generales de la tarjeta
+├── led-blink/
+├── timers/
 ├── adc/
 ├── uart/
-├── timers/
 ├── lcd-i2c/
 ├── lcd-sin-i2c/
 ├── teclado-4x4/
 ├── motor-paso-a-paso/
 ├── spwm/
-├── eeprom-lectura/
 ├── eeprom-escritura/
-├── led-blink/
+├── eeprom-lectura/
 ├── tft-st7735/
 │   ├── mostrar-logo/
 │   └── adc-tft/
@@ -187,32 +186,16 @@ dsPIC-Basic-Examples/
 └── README.md
 ```
 
-Los ejemplos básicos se mantienen separados de `projects/`, donde pueden desarrollarse aplicaciones más completas que integren varios periféricos y módulos.
-
----
-
 ## Estado del proyecto
 
-El repositorio está en **desarrollo continuo**.
+El repositorio está en desarrollo continuo. Se añadirán nuevos ejemplos de control, comunicaciones, adquisición de señales, instrumentación, electrónica de potencia y aplicaciones integradas.
 
-Se irán añadiendo ejemplos de periféricos, comunicaciones, adquisición de señales, interfaces gráficas, control, electrónica de potencia y proyectos completos basados principalmente en el **dsPIC33FJ32MC204**.
+La documentación diferencia entre:
 
-La PCB V1I2 es la plataforma de referencia actual para las nuevas pruebas.
-
----
-
-## Herramientas
-
-- Microchip **MPLAB X IDE**
-- Microchip **XC16 Compiler**
-- Programador/debugger compatible con **ICSP**
-- Tarjeta de desarrollo dsPIC V1I2
-- Python 3 para los ejemplos que incluyen herramientas auxiliares
-
----
+- ejemplos implementados con código y pruebas reales;
+- plantillas reutilizables;
+- proyectos marcados explícitamente como **en preparación**.
 
 ## Licencia
 
-Este proyecto se distribuye bajo la **licencia MIT**.
-
-Consulta el archivo [LICENSE](LICENSE) para más información.
+El código se distribuye bajo la [licencia MIT](LICENSE). Puedes estudiarlo, modificarlo e integrarlo en tus propios proyectos respetando los términos de la licencia.
