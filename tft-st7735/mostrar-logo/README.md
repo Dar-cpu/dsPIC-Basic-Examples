@@ -1,6 +1,10 @@
 # TFT ST7735 — Mostrar imágenes y logos con dsPIC33FJ32MC204
 
+[← Volver al índice de ejemplos](../../README.md)
+
 Ejemplo para mostrar **imágenes y logos personalizados** en una pantalla TFT de **1.8" 128x160** con controlador **ST7735/ST7735S**, utilizando un **dsPIC33FJ32MC204** y SPI1.
+
+El montaje fue validado sobre la tarjeta de desarrollo V1I2. La pantalla y todas sus señales lógicas trabajan a **3.3 V**.
 
 El proyecto incluye un conversor gráfico en Python que permite tomar una imagen PNG, JPG, BMP, GIF o WEBP y generar directamente el archivo `microchip.h` utilizado por el firmware.
 
@@ -333,6 +337,18 @@ El valor `0xC0` utiliza el orden de color que funcionó con el panel probado. Al
 5. Compila el proyecto.
 6. Programa el dsPIC mediante ICSP.
 7. La pantalla debe mostrar el texto `HI,` y debajo el logo convertido.
+
+## Si no funciona
+
+| Síntoma | Comprobación |
+| --- | --- |
+| Pantalla completamente apagada | Revisa 3.3 V, GND y la conexión del backlight. |
+| Backlight activo, pero sin imagen | Comprueba CS, DC, RES, SCK1, SDO1 y el mapeo PPS. |
+| Imagen desplazada | Ajusta `ST7735_XSTART` y `ST7735_YSTART` para la variante del panel. |
+| Rojo y azul intercambiados | Prueba el orden RGB/BGR mediante `ST7735_MADCTL_VALUE`. |
+| Logo corrupto o incompleto | Regenera `microchip.h` y confirma que se añadieron el header y el driver correctos. |
+| Error de memoria durante compilación | Reduce el tamaño de la imagen; los datos se almacenan en Flash/PSV. |
+| El conversor no inicia | Instala Pillow y usa una instalación de Python que incluya Tkinter. |
 
 ---
 

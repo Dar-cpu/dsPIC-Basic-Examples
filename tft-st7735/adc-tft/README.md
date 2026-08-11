@@ -1,6 +1,8 @@
 # dsPIC33FJ32MC204 — ADC + TFT Mini Oscilloscope
 
-Ejemplo práctico de adquisición y visualización de una señal analógica utilizando el **ADC de 12 bits del dsPIC33FJ32MC204** y una pantalla **TFT ST7735/ST7735S de 128x160 píxeles**.
+[← Volver al índice de ejemplos](../../README.md)
+
+Ejemplo práctico de adquisición y visualización de una señal analógica utilizando el **ADC de 12 bits del dsPIC33FJ32MC204** y una pantalla **TFT ST7735/ST7735S de 128x160 píxeles**. El montaje fue validado sobre la tarjeta de desarrollo V1I2.
 
 El firmware captura bloques de **256 muestras**, realiza un trigger básico por software y muestra **128 muestras** en pantalla. Además, cuatro pulsadores permiten modificar la frecuencia de muestreo, la escala vertical, el modo de trigger y alternar entre **RUN/HOLD**.
 
@@ -10,7 +12,7 @@ Este ejemplo está pensado como una demostración de adquisición ADC y visualiz
 
 ## Resultado de la prueba
 
-La prueba se realizó con una señal senoidal generada externamente y verificada antes de conectarla al ADC del dsPIC.
+La prueba se realizó con una señal periódica generada externamente y verificada antes de conectarla al ADC del dsPIC.
 
 ### Generador de funciones
 
@@ -119,13 +121,13 @@ La resistencia de 1 kΩ se utiliza en serie con la entrada durante la prueba.
 ### Señal utilizada en la prueba
 
 ```text
-WAVE   = SINE
 FREQ   = 10 kHz
 AMPL   = 1.2 V configurados en FY6900
 OFFSET = 1.65 V
+VPP    ≈ 1.52 V medidos con osciloscopio
 ```
 
-Antes de conectar la salida del generador al dsPIC se comprobó la señal con un osciloscopio.
+La lectura `AMPL` de un generador puede depender de si la salida está configurada para una carga de 50 Ω o de alta impedancia. Por eso, antes de conectar la salida al dsPIC se comprobó con un osciloscopio tanto la amplitud real como el offset.
 
 ---
 
@@ -387,6 +389,19 @@ A diferencia del ejemplo `mostrar-logo`, aquí **no se necesita `microchip.h`**,
 8. Selecciona el **dsPIC33FJ32MC204** y el compilador **XC16**.
 9. Compila y programa el dsPIC mediante ICSP.
 10. Utiliza TIME, SCALE, TRIGGER y RUN para modificar la visualización.
+
+## Si no funciona
+
+| Síntoma | Comprobación |
+| --- | --- |
+| La TFT no muestra la interfaz | Revisa alimentación, CS, DC, RES y las señales SPI1. |
+| La forma de onda queda arriba o abajo | Comprueba el offset y que AN6 permanezca entre 0 V y 3.3 V. |
+| La señal aparece recortada | Reduce amplitud u offset; el ADC no admite tensiones fuera de AVSS–AVDD. |
+| La lectura es muy ruidosa | Une tierras, usa cables cortos y revisa desacoplo y conexión analógica. |
+| Un botón no responde | Confirma el GPIO indicado, conexión a GND y que no exista un puente a 3.3 V. |
+| Los botones actúan varias veces | Revisa contactos y cableado; el firmware ya aplica 20 ms de debounce. |
+| La imagen se desplaza horizontalmente | Selecciona trigger R/F o prueba otra frecuencia de muestreo. |
+| HOLD no conserva la captura | Revisa el botón RUN en RB2/CN6 y su pull-up interno. |
 
 ---
 
