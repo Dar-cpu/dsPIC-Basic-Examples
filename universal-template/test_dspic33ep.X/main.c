@@ -53,6 +53,7 @@
 #define FCY 40000000UL
 
 #include <xc.h>
+#include <stdint.h>
 #include <libpic30.h>
 
 
