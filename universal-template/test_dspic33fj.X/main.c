@@ -1,189 +1,74 @@
 /*
  * ============================================================================
- * dsPIC33FJ32MC204 - Prueba simultanea de todos los GPIO
+ * PLANTILLA UNIVERSAL: SIMULACIÓN en Proteus / Tarjeta física 
+ * Frecuencia: 40 MIPS (Cristal Externo 8 MHz + PLL)
  * ============================================================================
- *
- * Objetivo:
- *   Verificar rapidamente la conectividad de los GPIO de la tarjeta.
- *   Todos los GPIO utilizables cambian de estado AL MISMO TIEMPO:
- *
- *       500 ms HIGH
- *       500 ms LOW
- *       repetir
- *
- * Esto permite usar un solo LED y moverlo de pin en pin sin esperar una
- * secuencia individual para cada GPIO.
- *
- * MCU:   dsPIC33FJ32MC204
- * Clock: cristal externo de 8 MHz + PLL
- *        FOSC = 80 MHz
- *        FCY  = 40 MHz (40 MIPS)
- *
- * GPIO probados: 33
- *
- * No se prueban:
- *   6  = VSS
- *   7  = VCAP
- *   16 = AVSS
- *   17 = AVDD
- *   18 = MCLR
- *   28 = VDD
- *   29 = VSS
- *   30 = OSC1 / RA2  (cristal)
- *   31 = OSC2 / RA3  (cristal)
- *   39 = VSS
- *   40 = VDD
- *
- * IMPORTANTE:
- *   El dsPIC33FJ utiliza PGD1/PGC1 para ICSP en esta tarjeta:
- *
- *       pin 21 = RB0 / PGED1
- *       pin 22 = RB1 / PGEC1
- *
- *   Estos pines tambien se hacen parpadear. Programa la tarjeta y desconecta
- *   el PICkit antes de realizar la comprobacion completa.
- *
- * LED recomendado:
- *
- *       GPIO ---- 1k ----|>|---- GND
- *
+ * Instrucciones:
+ * 1. Para simular en Proteus: Seleccione el dsPIC33FJ32MC204 en MPLAB X
+ * 2. Para grabar la placa física: Seleccione el dsPIC33EP32MC204 en MPLAB X
  * ============================================================================
  */
 
-#define FCY 40000000UL
+#include <xc.h>   
+#define FCY 40000000UL  // 40 MIPS (Fosc/2)
+#include <libpic30.h> 
 
-#include <xc.h>
-#include <stdint.h>
-#include <libpic30.h>
+#if defined(__dsPIC33FJ32MC204__) /* dsPIC33FJ - SIMULACIÓN PROTEUS */
+    #pragma config POSCMD = HS      // Cristal de alta velocidad
+    #pragma config FNOSC = PRIPLL   // Arranque Cristal + PLL
+    #pragma config IESO = OFF       
+    #pragma config FCKSM = CSDCMD   // Cambio de reloj deshabilitado
+    #pragma config OSCIOFNC = OFF   // OSC2 retorno de cristal
+    #pragma config FWDTEN = OFF     
+    #pragma config JTAGEN = OFF     
+    #pragma config ICS = PGD1       
 
+#elif defined(__dsPIC33EP32MC204__) /* dsPIC33EP - PLACA FÍSICA */
+    
+    #pragma config ICS = PGD3       // No Cambiar el puerto de programación o podrías perder comunicación con tu dsPIC!!
+    #pragma config JTAGEN = OFF     // No activar
+    #pragma config ALTI2C1 = OFF    
+    #pragma config ALTI2C2 = OFF
+    #pragma config PLLKEN = ON           
+    #pragma config FWDTEN = OFF     
 
-/* ========================================================================== */
-/* Configuration Bits                                                         */
-/* ========================================================================== */
+    #pragma config POSCMD = HS      // Cristal de alta velocidad
+    #pragma config FNOSC = PRIPLL   // Arranque Cristal + PLL
+    #pragma config IESO = OFF       
+    #pragma config OSCIOFNC = OFF   // OSC2 retorno de cristal
+    #pragma config IOL1WAY = OFF    
+    #pragma config FCKSM = CSDCMD   // Cambio de reloj deshabilitado
+#else
+    #error "Seleccione dsPIC33FJ32MC204 o dsPIC33EP32MC204 en el proyecto."
+#endif
 
-#pragma config FNOSC = PRIPLL    /* Primary oscillator + PLL */
-#pragma config IESO = OFF
-#pragma config POSCMD = XT       /* Cristal externo de 8 MHz */
-#pragma config OSCIOFNC = OFF
-#pragma config FCKSM = CSDCMD
-#pragma config IOL1WAY = OFF
+void Init_Hardware_Base(void) {  // Ajustar según registros de cada dsPIC, por defecto está configurado para pines digitales.
+    #if defined(__dsPIC33FJ32MC204__)
+        AD1PCFGL = 0xFFFF; // Pines a digital en FJ
+    #elif defined(__dsPIC33EP32MC204__)
+        ANSELA = 0x0000;   // Pines a digital en EP
+        ANSELB = 0x0000;   
+        ANSELC = 0x0000;   
+    #endif
+}
 
-#pragma config FWDTEN = OFF
-#pragma config PWMPIN = ON       /* Pines PWM controlados por PORT al arrancar */
-#pragma config ALTI2C = OFF
-
-#pragma config JTAGEN = OFF
-#pragma config ICS = PGD1        /* ICSP por RB0/RB1 */
-
-
-/* ========================================================================== */
-/* Mascaras de GPIO                                                           */
-/* ========================================================================== */
-
-/*
- * PORTA utilizados como GPIO:
- *
- * RA0, RA1, RA4, RA7, RA8, RA9, RA10
- *
- * RA2 y RA3 NO se incluyen porque pertenecen al cristal externo.
- */
-#define GPIO_MASK_A    0x0793U
-
-/* RB0 ... RB15 son GPIO utilizables en esta prueba. */
-#define GPIO_MASK_B    0xFFFFU
-
-/* RC0 ... RC9 son GPIO utilizables en esta prueba. */
-#define GPIO_MASK_C    0x03FFU
-
-
-/* ========================================================================== */
-/* Clock                                                                       */
-/* ========================================================================== */
-
-static void clock_init(void)
-{
-    /*
-     * FIN = 8 MHz
-     * N1  = 2
-     * M   = 40
-     * N2  = 2
-     *
-     * FOSC = 8 MHz / 2 * 40 / 2 = 80 MHz
-     * FCY  = FOSC / 2            = 40 MHz
-     */
-
-    PLLFBD = 38U;              /* M = PLLFBD + 2 = 40 */
-    CLKDIVbits.PLLPRE = 0U;    /* N1 = 2 */
-    CLKDIVbits.PLLPOST = 0U;   /* N2 = 2 */
-
-    while (OSCCONbits.LOCK == 0U)
-    {
-        ;
+// PROGRAMA PRINCIPAL
+int main(void) {
+    // Cálculos del PLL (Para 40 MIPS con 8 MHz), se aplican directamente a los registros en ambos micros
+    PLLFBD = 38;             // M = 40 
+    CLKDIVbits.PLLPOST = 0;  // N2 = 2 
+    CLKDIVbits.PLLPRE = 0;   // N1 = 2 
+    
+    Init_Hardware_Base();   // Iniciar pines analógicos/digitales
+    
+    // Código a ejecutar 
+    TRISBbits.TRISB4 = 0;    // RB4 salida
+    
+    while(1) {
+        LATBbits.LATB4 = 1;  
+        __delay_ms(500);     
+        LATBbits.LATB4 = 0;  
+        __delay_ms(500);     
     }
-}
-
-
-/* ========================================================================== */
-/* GPIO                                                                        */
-/* ========================================================================== */
-
-static void gpio_init(void)
-{
-    /* Desactivar las funciones analogicas: todos los GPIO quedan digitales. */
-    AD1PCFGL = 0xFFFFU;
-
-    /* Estado inicial LOW antes de habilitar las salidas. */
-    LATA = 0x0000U;
-    LATB = 0x0000U;
-    LATC = 0x0000U;
-
-    /*
-     * Configurar como salida solamente los GPIO validos del encapsulado.
-     *
-     * TRIS bit = 0 -> salida
-     * TRIS bit = 1 -> entrada
-     */
-    TRISA = (uint16_t)(~GPIO_MASK_A);
-    TRISB = (uint16_t)(~GPIO_MASK_B);
-    TRISC = (uint16_t)(~GPIO_MASK_C);
-}
-
-
-static void gpio_all_high(void)
-{
-    /* Todos los GPIO comprobables pasan a HIGH simultaneamente. */
-    LATA = GPIO_MASK_A;
-    LATB = GPIO_MASK_B;
-    LATC = GPIO_MASK_C;
-}
-
-
-static void gpio_all_low(void)
-{
-    /* Todos los GPIO comprobables pasan a LOW simultaneamente. */
-    LATA = 0x0000U;
-    LATB = 0x0000U;
-    LATC = 0x0000U;
-}
-
-
-/* ========================================================================== */
-/* Main                                                                        */
-/* ========================================================================== */
-
-int main(void)
-{
-    clock_init();
-    gpio_init();
-
-    while (1)
-    {
-        gpio_all_high();
-        __delay_ms(500);
-
-        gpio_all_low();
-        __delay_ms(500);
-    }
-
     return 0;
 }
