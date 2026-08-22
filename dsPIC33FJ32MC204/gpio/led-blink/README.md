@@ -1,6 +1,6 @@
 # LED Blink con dsPIC33FJ32MC204
 
-[← Volver al índice de ejemplos](../README.md)
+[← Volver al índice de ejemplos](../../README.md)
 
 Ejemplo inicial para comprobar que la tarjeta, el reloj, el compilador y el programador ICSP funcionan correctamente. El firmware conmuta un LED conectado a **RB11** y alterna automáticamente entre dos velocidades: 1 Hz y 2 Hz.
 
@@ -55,7 +55,7 @@ LATBbits.LATB11 ^= 1;
 
 El operador XOR invierte el estado anterior del pin: si estaba en 0 pasa a 1 y viceversa.
 
-Los retardos son bloqueantes; durante cada `__delay_ms()` el procesador no realiza otra tarea. Esto es adecuado para una primera prueba, mientras que el ejemplo [Timer1](../timers/timer1) muestra cómo temporizar mediante interrupciones y mantener libre el bucle principal.
+Los retardos son bloqueantes; durante cada `__delay_ms()` el procesador no realiza otra tarea. Esto es adecuado para una primera prueba, mientras que el ejemplo [Timer1](../../timer/timer1) muestra cómo temporizar mediante interrupciones y mantener libre el bucle principal.
 
 ## Cómo probarlo
 

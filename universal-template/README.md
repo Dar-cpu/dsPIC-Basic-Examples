@@ -1,168 +1,89 @@
 # Plantilla universal para dsPIC33FJ32MC204 y dsPIC33EP32MC204
 
-[← Volver al índice de ejemplos](../README.md)
+[← Volver al inicio del repositorio](../README.md)
 
-Esta carpeta contiene una plantilla mínima de código para trabajar con los microcontroladores **dsPIC33FJ32MC204** y **dsPIC33EP32MC204** usados en la tarjeta.
+Esta carpeta contiene un único archivo fuente que sirve como punto de partida para los dos microcontroladores compatibles con la tarjeta de desarrollo TECKIO dsPIC33 V1I2.
 
-La intención de esta sección es mantener el repositorio limpio y fácil de consultar: se conserva únicamente el archivo fuente principal `main.c` y, como referencia, los archivos compilados dentro de `dist/default/production/`.
-
-> Esta carpeta no pretende contener proyectos MPLAB X completos. Los archivos internos generados por el IDE, configuraciones locales, cachés y directorios de compilación que no aportan al aprendizaje se han eliminado deliberadamente.
-
-## Estructura actual
+## Estructura
 
 ```text
 universal-template/
 ├── README.md
-├── test_dspic33fj.X/
-│   ├── main.c
-│   └── dist/
-│       └── default/
-│           └── production/
-│               ├── test_fj.X.production.hex
-│               └── test_fj.X.production.elf
-│
-└── test_dspic33ep.X/
-    ├── main.c
-    └── dist/
-        └── default/
-            └── production/
-                ├── test_ep.X.production.hex
-                └── test_ep.X.production.elf
+└── main.c
 ```
 
-## Qué archivo utilizar
+La plantilla no contiene un proyecto completo de MPLAB X ni archivos generados por el compilador. Para utilizarla, crea un proyecto nuevo y añade `main.c`.
 
-| Archivo | Uso |
-| --- | --- |
-| `main.c` | Código fuente principal. Es el archivo recomendado para estudiar, modificar o copiar a un proyecto propio de MPLAB X. |
-| `.hex` | Firmware ya compilado que puede cargarse directamente al microcontrolador con MPLAB X IPE/IDE y un programador compatible. |
-| `.elf` | Archivo generado por el compilador con información útil para depuración y herramientas de desarrollo. |
+## Selección automática del dispositivo
 
-Para desarrollar un nuevo ejemplo, crea un proyecto MPLAB X para el dispositivo correspondiente y utiliza el `main.c` de esta carpeta como punto de partida.
-
-## Dispositivos
-
-| Carpeta | Microcontrolador | ICSP configurado |
-| --- | --- | --- |
-| `test_dspic33fj.X/` | dsPIC33FJ32MC204 | PGD1 / PGC1 |
-| `test_dspic33ep.X/` | dsPIC33EP32MC204 | PGD3 / PGC3 |
-
-El canal ICSP es diferente entre ambos dispositivos en esta tarjeta. No cambies el Configuration Bit `ICS` sin comprobar primero el hardware.
-
-## Plantilla compartida
-
-Los dos `main.c` utilizan compilación condicional para mantener una misma base de código y aplicar únicamente las diferencias necesarias entre familias.
-
-### GPIO digital
-
-La principal diferencia de inicialización básica es la configuración de las entradas analógicas.
+MPLAB X define la macro del dispositivo elegido en las propiedades del proyecto. El preprocesador compila solamente el bloque correspondiente:
 
 ```c
 #if defined(__dsPIC33FJ32MC204__)
-    AD1PCFGL = 0xFFFF;
-
+    /* Configuración del FJ */
 #elif defined(__dsPIC33EP32MC204__)
-    ANSELA = 0x0000;
-    ANSELB = 0x0000;
-    ANSELC = 0x0000;
+    /* Configuración del EP */
+#else
+    #error "Seleccione dsPIC33FJ32MC204 o dsPIC33EP32MC204 en el proyecto."
 #endif
 ```
 
-| Familia | Registros utilizados |
-| --- | --- |
-| dsPIC33FJ | `AD1PCFGL` |
-| dsPIC33EP | `ANSELA`, `ANSELB`, `ANSELC` |
+El mismo archivo puede copiarse a ambos proyectos; no es necesario mantener dos versiones.
 
-## Reloj de la plantilla
+## Configuración incluida
 
-La configuración base utiliza un cristal externo de **8 MHz** y PLL.
+| Función | dsPIC33FJ32MC204 | dsPIC33EP32MC204 |
+| --- | --- | --- |
+| Entradas analógicas desactivadas | `AD1PCFGL` | `ANSELA`, `ANSELB`, `ANSELC` |
+| ICSP de la tarjeta | PGD1 / PGC1 | PGD3 / PGC3 |
+| Cristal externo | 8 MHz | 8 MHz |
+| Frecuencia objetivo | `FCY = 40 MHz` | `FCY = 40 MHz` |
+| Watchdog | Desactivado | Desactivado |
+| JTAG | Desactivado | Desactivado |
 
-```c
-PLLFBD = 38;
-CLKDIVbits.PLLPOST = 0;
-CLKDIVbits.PLLPRE = 0;
-```
+## Prueba mínima incluida
 
-La configuración utilizada corresponde a:
-
-```text
-FIN  = 8 MHz
-FVCO = 8 MHz / 2 × 40 = 160 MHz
-FOSC = 160 MHz / 2 = 80 MHz
-FCY  = FOSC / 2 = 40 MHz
-```
-
-Por tanto, la plantilla trabaja con:
-
-- `FOSC = 80 MHz`
-- `FCY = 40 MHz`
-- `40 MIPS`
-
-## Ejemplo base incluido
-
-El código actual utiliza `RB4` como una prueba mínima de ejecución:
-
-```c
-TRISBbits.TRISB4 = 0;
-
-while (1)
-{
-    LATBbits.LATB4 = 1;
-    __delay_ms(500);
-
-    LATBbits.LATB4 = 0;
-    __delay_ms(500);
-}
-```
-
-El resultado esperado es una señal de **1 Hz**:
+El `main.c` configura RB4 como salida y conmuta su estado cada 500 ms. Esta operación funciona como una comprobación básica de que el proyecto se compiló, el reloj se inició y el microcontrolador está ejecutando código.
 
 ```text
-RB4 ── 500 ms HIGH ── 500 ms LOW ── repetir
+RB4: 500 ms HIGH + 500 ms LOW
+Periodo aproximado: 1 s
+Frecuencia aproximada: 1 Hz
 ```
 
-Puedes comprobarla con un LED y una resistencia, un osciloscopio o un analizador lógico.
+Puedes reemplazar directamente ese bloque por el código de tu aplicación.
 
-## Cómo usar el código fuente
+## Cómo utilizarla
 
 ### dsPIC33FJ32MC204
 
-1. Crea un proyecto nuevo en MPLAB X.
-2. Selecciona `dsPIC33FJ32MC204` como dispositivo.
-3. Selecciona el compilador XC16.
-4. Copia el contenido de `test_dspic33fj.X/main.c` al proyecto.
-5. Compila y programa mediante PGD1/PGC1.
+1. Crea un proyecto nuevo para `dsPIC33FJ32MC204`.
+2. Selecciona XC16.
+3. Añade [`main.c`](main.c).
+4. Conserva `ICS = PGD1`.
+5. Compila y programa mediante PGD1 / PGC1.
 
 ### dsPIC33EP32MC204
 
-1. Crea un proyecto nuevo en MPLAB X.
-2. Selecciona `dsPIC33EP32MC204` como dispositivo.
-3. Selecciona el compilador XC16.
-4. Copia el contenido de `test_dspic33ep.X/main.c` al proyecto.
-5. Compila y programa mediante PGD3/PGC3.
+1. Crea un proyecto nuevo para `dsPIC33EP32MC204`.
+2. Selecciona XC16.
+3. Añade [`main.c`](main.c).
+4. Conserva `ICS = PGD3`.
+5. Compila y programa mediante PGD3 / PGC3.
 
-## Programar directamente el firmware compilado
+El bloque que no corresponde al dispositivo seleccionado aparecerá inactivo en el editor y no formará parte de la compilación.
 
-Si solo quieres ejecutar el ejemplo sin modificar el código, puedes utilizar el archivo `.hex` correspondiente:
+## Por qué no se incluyen archivos compilados
 
-```text
-dsPIC33FJ32MC204
-└── test_dspic33fj.X/dist/default/production/test_fj.X.production.hex
+Los archivos `.hex` y `.elf` dependen del dispositivo, la versión del código y la configuración del proyecto. Como esta carpeta funciona como plantilla y no como ejemplo final, conservar únicamente el código fuente evita confundir binarios del FJ con binarios del EP.
 
-dsPIC33EP32MC204
-└── test_dspic33ep.X/dist/default/production/test_ep.X.production.hex
-```
-
-Estos archivos permiten conservar una versión compilada del ejemplo junto al código fuente que la genera.
+Si un ejemplo futuro necesita firmware listo para programar, el archivo compilado deberá publicarse dentro de la carpeta de ese ejemplo o como una versión verificable en GitHub Releases.
 
 ## Crear nuevos ejemplos
 
-La plantilla está pensada como punto de partida. Para cada nuevo ejemplo:
-
-1. Parte del `main.c` correspondiente al microcontrolador.
-2. Conserva los Configuration Bits necesarios para la tarjeta.
-3. Mantén el canal ICSP correcto para el dispositivo.
-4. Añade únicamente la inicialización y el código del periférico que se desea demostrar.
-5. Verifica el ejemplo físicamente antes de incorporarlo al repositorio público.
-
-El objetivo es que cada carpeta del repositorio sea pequeña, clara y centrada en el código necesario para aprender y utilizar una función concreta del dsPIC.
+1. Parte de este `main.c`.
+2. Selecciona el microcontrolador correcto en MPLAB X.
+3. Conserva el canal ICSP correspondiente.
+4. Sustituye la prueba de RB4 por el periférico que deseas demostrar.
+5. Verifica el resultado físicamente.
+6. Publica el ejemplo dentro de la carpeta específica del dispositivo.
