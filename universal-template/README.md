@@ -2,37 +2,65 @@
 
 [← Volver al índice de ejemplos](../README.md)
 
-Esta carpeta contiene dos proyectos MPLAB X con una misma aplicación base adaptada mediante compilación condicional para dos microcontroladores:
+Esta carpeta contiene una plantilla mínima de código para trabajar con los microcontroladores **dsPIC33FJ32MC204** y **dsPIC33EP32MC204** usados en la tarjeta.
 
-- **dsPIC33FJ32MC204:** simulación en Proteus y uso en hardware con el MCU FJ.
-- **dsPIC33EP32MC204:** uso en la tarjeta cuando está montado el MCU EP.
+La intención de esta sección es mantener el repositorio limpio y fácil de consultar: se conserva únicamente el archivo fuente principal `main.c` y, como referencia, los archivos compilados dentro de `dist/default/production/`.
 
-Ambas variantes configuran el cristal externo de 8 MHz y el PLL para trabajar con `FOSC = 80 MHz` y `FCY = 40 MHz` (40 MIPS). Como prueba mínima, RB4 cambia de estado cada 500 ms.
+> Esta carpeta no pretende contener proyectos MPLAB X completos. Los archivos internos generados por el IDE, configuraciones locales, cachés y directorios de compilación que no aportan al aprendizaje se han eliminado deliberadamente.
 
-## Cuándo usar cada proyecto
+## Estructura actual
 
-| Carpeta / archivo | Dispositivo | Uso |
-| --- | --- | --- |
-| `test_dspic33fj.X/` | dsPIC33FJ32MC204 | MPLAB X, hardware FJ y simulación Proteus |
-| `test_dspic33ep.X/` | dsPIC33EP32MC204 | MPLAB X y hardware EP |
-| `test_dspic33fj32mc204.pdsprj` | dsPIC33FJ32MC204 | Esquema de simulación Proteus |
+```text
+universal-template/
+├── README.md
+├── test_dspic33fj.X/
+│   ├── main.c
+│   └── dist/
+│       └── default/
+│           └── production/
+│               ├── test_fj.X.production.hex
+│               └── test_fj.X.production.elf
+│
+└── test_dspic33ep.X/
+    ├── main.c
+    └── dist/
+        └── default/
+            └── production/
+                ├── test_ep.X.production.hex
+                └── test_ep.X.production.elf
+```
 
-Aunque los dos `main.c` incluidos son equivalentes, cada proyecto conserva su dispositivo y configuración de compilación. Abre la carpeta `.X` correspondiente; no cambies únicamente el nombre del MCU esperando que todos los registros sean idénticos.
+## Qué archivo utilizar
 
-## Diferencias que maneja la plantilla
-
-### Pines analógicos
-
-| Familia | Registro usado para configurar GPIO digital |
+| Archivo | Uso |
 | --- | --- |
-| dsPIC33FJ | `AD1PCFGL` |
-| dsPIC33EP | `ANSELA`, `ANSELB`, `ANSELC` |
+| `main.c` | Código fuente principal. Es el archivo recomendado para estudiar, modificar o copiar a un proyecto propio de MPLAB X. |
+| `.hex` | Firmware ya compilado que puede cargarse directamente al microcontrolador con MPLAB X IPE/IDE y un programador compatible. |
+| `.elf` | Archivo generado por el compilador con información útil para depuración y herramientas de desarrollo. |
 
-La función `Init_Hardware_Base()` selecciona el bloque correcto mediante macros definidas por XC16:
+Para desarrollar un nuevo ejemplo, crea un proyecto MPLAB X para el dispositivo correspondiente y utiliza el `main.c` de esta carpeta como punto de partida.
+
+## Dispositivos
+
+| Carpeta | Microcontrolador | ICSP configurado |
+| --- | --- | --- |
+| `test_dspic33fj.X/` | dsPIC33FJ32MC204 | PGD1 / PGC1 |
+| `test_dspic33ep.X/` | dsPIC33EP32MC204 | PGD3 / PGC3 |
+
+El canal ICSP es diferente entre ambos dispositivos en esta tarjeta. No cambies el Configuration Bit `ICS` sin comprobar primero el hardware.
+
+## Plantilla compartida
+
+Los dos `main.c` utilizan compilación condicional para mantener una misma base de código y aplicar únicamente las diferencias necesarias entre familias.
+
+### GPIO digital
+
+La principal diferencia de inicialización básica es la configuración de las entradas analógicas.
 
 ```c
 #if defined(__dsPIC33FJ32MC204__)
     AD1PCFGL = 0xFFFF;
+
 #elif defined(__dsPIC33EP32MC204__)
     ANSELA = 0x0000;
     ANSELB = 0x0000;
@@ -40,26 +68,22 @@ La función `Init_Hardware_Base()` selecciona el bloque correcto mediante macros
 #endif
 ```
 
-### Configuration Bits e ICSP
+| Familia | Registros utilizados |
+| --- | --- |
+| dsPIC33FJ | `AD1PCFGL` |
+| dsPIC33EP | `ANSELA`, `ANSELB`, `ANSELC` |
 
-| Dispositivo | Canal ICSP configurado | Uso en la tarjeta |
-| --- | --- | --- |
-| dsPIC33FJ32MC204 | `ICS = PGD1` | PGD1 / PGC1 |
-| dsPIC33EP32MC204 | `ICS = PGD3` | PGD3 / PGC3 |
+## Reloj de la plantilla
 
-> **No cambies estos bits sin revisar el hardware.** El puerto ICSP es diferente para cada MCU en esta tarjeta y una selección incorrecta puede impedir la siguiente sesión de programación o depuración.
-
-Otros Configuration Bits también cambian entre familias; por ejemplo, el dsPIC33EP incorpora la opción de bloqueo del PLL (`PLLKEN`) y registros alternativos de I²C que no existen de la misma forma en el FJ.
-
-## Configuración de reloj
-
-Para ambos dispositivos se usan estos valores:
+La configuración base utiliza un cristal externo de **8 MHz** y PLL.
 
 ```c
-PLLFBD = 38;             // M = 40
-CLKDIVbits.PLLPOST = 0;  // N2 = 2
-CLKDIVbits.PLLPRE = 0;   // N1 = 2
+PLLFBD = 38;
+CLKDIVbits.PLLPOST = 0;
+CLKDIVbits.PLLPRE = 0;
 ```
+
+La configuración utilizada corresponde a:
 
 ```text
 FIN  = 8 MHz
@@ -68,78 +92,77 @@ FOSC = 160 MHz / 2 = 80 MHz
 FCY  = FOSC / 2 = 40 MHz
 ```
 
-## Prueba incluida
+Por tanto, la plantilla trabaja con:
 
-Después de inicializar el hardware, el ejemplo configura RB4 como salida:
+- `FOSC = 80 MHz`
+- `FCY = 40 MHz`
+- `40 MIPS`
+
+## Ejemplo base incluido
+
+El código actual utiliza `RB4` como una prueba mínima de ejecución:
 
 ```c
 TRISBbits.TRISB4 = 0;
+
+while (1)
+{
+    LATBbits.LATB4 = 1;
+    __delay_ms(500);
+
+    LATBbits.LATB4 = 0;
+    __delay_ms(500);
+}
 ```
 
-El pin permanece 500 ms en alto y 500 ms en bajo, por lo que la frecuencia de salida es 1 Hz.
+El resultado esperado es una señal de **1 Hz**:
 
 ```text
-RB4 ── 500 ms alto ── 500 ms bajo ── repetir
+RB4 ── 500 ms HIGH ── 500 ms LOW ── repetir
 ```
 
-Conecta un LED con resistencia o un osciloscopio para comprobar la ejecución.
+Puedes comprobarla con un LED y una resistencia, un osciloscopio o un analizador lógico.
 
-## Uso con MPLAB X
+## Cómo usar el código fuente
 
 ### dsPIC33FJ32MC204
 
-1. Abre `test_dspic33fj.X`.
-2. Confirma que el dispositivo del proyecto sea `dsPIC33FJ32MC204`.
-3. Selecciona XC16.
-4. Compila para generar el `.hex`.
-5. Programa por PGD1/PGC1 o carga el HEX en Proteus.
+1. Crea un proyecto nuevo en MPLAB X.
+2. Selecciona `dsPIC33FJ32MC204` como dispositivo.
+3. Selecciona el compilador XC16.
+4. Copia el contenido de `test_dspic33fj.X/main.c` al proyecto.
+5. Compila y programa mediante PGD1/PGC1.
 
 ### dsPIC33EP32MC204
 
-1. Abre `test_dspic33ep.X`.
-2. Confirma que el dispositivo sea `dsPIC33EP32MC204`.
-3. Selecciona XC16.
-4. Compila y programa la tarjeta por PGD3/PGC3.
+1. Crea un proyecto nuevo en MPLAB X.
+2. Selecciona `dsPIC33EP32MC204` como dispositivo.
+3. Selecciona el compilador XC16.
+4. Copia el contenido de `test_dspic33ep.X/main.c` al proyecto.
+5. Compila y programa mediante PGD3/PGC3.
 
-## Uso con Proteus
+## Programar directamente el firmware compilado
 
-1. Abre `test_dspic33fj32mc204.pdsprj`.
-2. Compila `test_dspic33fj.X`.
-3. Asigna al dsPIC simulado el archivo HEX generado en `dist/default/production/`.
-4. Ejecuta la simulación y observa RB4.
-
-La simulación está preparada para el **dsPIC33FJ32MC204**; no representa automáticamente el comportamiento del EP.
-
-## Adaptar la plantilla
-
-Para iniciar un proyecto nuevo:
-
-1. Conserva la rama de Configuration Bits del MCU elegido.
-2. Mantén la configuración ICSP correspondiente a la tarjeta.
-3. Sustituye únicamente el bloque de aplicación dentro de `main()`.
-4. Añade inicialización diferenciada bajo `#if` cuando un periférico cambie entre FJ y EP.
-5. Compila ambas variantes después de cualquier cambio compartido.
-
-## Estructura
+Si solo quieres ejecutar el ejemplo sin modificar el código, puedes utilizar el archivo `.hex` correspondiente:
 
 ```text
-universal-template/
-├── README.md
-├── test_dspic33fj.X/
-│   ├── main.c
-│   └── nbproject/
-├── test_dspic33ep.X/
-│   ├── main.c
-│   └── nbproject/
-└── test_dspic33fj32mc204.pdsprj
+dsPIC33FJ32MC204
+└── test_dspic33fj.X/dist/default/production/test_fj.X.production.hex
+
+dsPIC33EP32MC204
+└── test_dspic33ep.X/dist/default/production/test_ep.X.production.hex
 ```
 
-## Si no funciona
+Estos archivos permiten conservar una versión compilada del ejemplo junto al código fuente que la genera.
 
-| Síntoma | Comprobación |
-| --- | --- |
-| XC16 muestra el `#error` del dispositivo | Abre el proyecto correcto y verifica el MCU seleccionado. |
-| El programador no detecta la tarjeta | Revisa si corresponde PGD1/PGC1 o PGD3/PGC3. |
-| RB4 no conmuta | Comprueba reloj, alimentación y que el pin esté configurado como digital. |
-| Proteus no inicia | Confirma el dispositivo FJ y la ruta del HEX recién compilado. |
-| Los retardos son incorrectos | Verifica que `FCY` sea 40 MHz. |
+## Crear nuevos ejemplos
+
+La plantilla está pensada como punto de partida. Para cada nuevo ejemplo:
+
+1. Parte del `main.c` correspondiente al microcontrolador.
+2. Conserva los Configuration Bits necesarios para la tarjeta.
+3. Mantén el canal ICSP correcto para el dispositivo.
+4. Añade únicamente la inicialización y el código del periférico que se desea demostrar.
+5. Verifica el ejemplo físicamente antes de incorporarlo al repositorio público.
+
+El objetivo es que cada carpeta del repositorio sea pequeña, clara y centrada en el código necesario para aprender y utilizar una función concreta del dsPIC.
