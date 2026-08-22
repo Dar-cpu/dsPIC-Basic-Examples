@@ -2,14 +2,12 @@
 
 [← Volver al índice de ejemplos](../README.md)
 
-Esta carpeta contiene dos proyectos MPLAB X preparados para comprobar rápidamente una tarjeta equipada con cualquiera de los dos microcontroladores compatibles:
+Esta carpeta contiene dos proyectos MPLAB X con una misma aplicación base adaptada mediante compilación condicional para dos microcontroladores:
 
-- **dsPIC33FJ32MC204:** hardware FJ y simulación en Proteus.
-- **dsPIC33EP32MC204:** hardware EP.
+- **dsPIC33FJ32MC204:** simulación en Proteus y uso en hardware con el MCU FJ.
+- **dsPIC33EP32MC204:** uso en la tarjeta cuando está montado el MCU EP.
 
-Ambos proyectos utilizan cristal externo de 8 MHz y PLL para trabajar con `FOSC = 80 MHz` y `FCY = 40 MHz` (40 MIPS).
-
-La aplicación incluida es una prueba de conectividad: **todos los GPIO utilizables cambian HIGH/LOW simultáneamente cada 500 ms**. De esta forma basta con conectar un LED con resistencia y moverlo de pin en pin para comprobar rápidamente los headers de la tarjeta.
+Ambas variantes configuran el cristal externo de 8 MHz y el PLL para trabajar con `FOSC = 80 MHz` y `FCY = 40 MHz` (40 MIPS). Como prueba mínima, RB4 cambia de estado cada 500 ms.
 
 ## Cuándo usar cada proyecto
 
@@ -19,91 +17,49 @@ La aplicación incluida es una prueba de conectividad: **todos los GPIO utilizab
 | `test_dspic33ep.X/` | dsPIC33EP32MC204 | MPLAB X y hardware EP |
 | `test_dspic33fj32mc204.pdsprj` | dsPIC33FJ32MC204 | Esquema de simulación Proteus |
 
-Abre siempre la carpeta `.X` correspondiente al MCU instalado en la tarjeta. Los dos dispositivos comparten gran parte del pinout, pero sus registros de configuración y el canal ICSP utilizado no son iguales.
+Aunque los dos `main.c` incluidos son equivalentes, cada proyecto conserva su dispositivo y configuración de compilación. Abre la carpeta `.X` correspondiente; no cambies únicamente el nombre del MCU esperando que todos los registros sean idénticos.
 
-## Prueba de todos los GPIO
+## Diferencias que maneja la plantilla
 
-Con el cristal externo conectado se comprueban **33 GPIO**.
+### Pines analógicos
 
-```text
-500 ms  -> todos los GPIO HIGH
-500 ms  -> todos los GPIO LOW
-repetir indefinidamente
-```
-
-Puedes utilizar un solo LED:
-
-```text
-GPIO ---- 1 kΩ ----|>|---- GND
-```
-
-Mientras el programa está ejecutándose, mueve el LED entre los GPIO de los headers. Cualquier GPIO incluido en la prueba debe encender y apagar el LED aproximadamente una vez por segundo.
-
-### GPIO incluidos
-
-```text
-PORTA: RA0, RA1, RA4, RA7, RA8, RA9, RA10
-PORTB: RB0 ... RB15
-PORTC: RC0 ... RC9
-```
-
-Los pines `RA2` y `RA3` no se utilizan como GPIO porque están conectados al cristal externo mediante `OSC1` y `OSC2`.
-
-## Pines no incluidos en la prueba
-
-| Pin físico | Función |
-| ---: | --- |
-| 6 | VSS |
-| 7 | VCAP |
-| 16 | AVSS |
-| 17 | AVDD |
-| 18 | MCLR |
-| 28 | VDD |
-| 29 | VSS |
-| 30 | OSC1 / RA2 |
-| 31 | OSC2 / RA3 |
-| 39 | VSS |
-| 40 | VDD |
-
-## Diferencias entre FJ y EP
-
-### Configuración digital
-
-| Familia | Registro usado |
+| Familia | Registro usado para configurar GPIO digital |
 | --- | --- |
-| dsPIC33FJ | `AD1PCFGL = 0xFFFF` |
+| dsPIC33FJ | `AD1PCFGL` |
 | dsPIC33EP | `ANSELA`, `ANSELB`, `ANSELC` |
 
-En el EP se utiliza:
+La función `Init_Hardware_Base()` selecciona el bloque correcto mediante macros definidas por XC16:
 
 ```c
-ANSELA = 0x0000;
-ANSELB = 0x0000;
-ANSELC = 0x0000;
+#if defined(__dsPIC33FJ32MC204__)
+    AD1PCFGL = 0xFFFF;
+#elif defined(__dsPIC33EP32MC204__)
+    ANSELA = 0x0000;
+    ANSELB = 0x0000;
+    ANSELC = 0x0000;
+#endif
 ```
 
-### ICSP
+### Configuration Bits e ICSP
 
-| Dispositivo | Configuration Bit | Pines usados en la tarjeta |
+| Dispositivo | Canal ICSP configurado | Uso en la tarjeta |
 | --- | --- | --- |
-| dsPIC33FJ32MC204 | `ICS = PGD1` | RB0 / PGED1 y RB1 / PGEC1 |
-| dsPIC33EP32MC204 | `ICS = PGD3` | RB0 / PGED3 y RB1 / PGEC3 |
+| dsPIC33FJ32MC204 | `ICS = PGD1` | PGD1 / PGC1 |
+| dsPIC33EP32MC204 | `ICS = PGD3` | PGD3 / PGC3 |
 
-RB0 y RB1 también forman parte de la prueba GPIO. Para evitar que el programador interfiera con estas líneas, programa primero la tarjeta y **desconecta el PICkit antes de comprobar todos los pines**.
+> **No cambies estos bits sin revisar el hardware.** El puerto ICSP es diferente para cada MCU en esta tarjeta y una selección incorrecta puede impedir la siguiente sesión de programación o depuración.
 
-> No cambies el canal ICSP sin revisar el hardware de la tarjeta. Una selección incorrecta puede impedir la siguiente sesión de programación o depuración.
+Otros Configuration Bits también cambian entre familias; por ejemplo, el dsPIC33EP incorpora la opción de bloqueo del PLL (`PLLKEN`) y registros alternativos de I²C que no existen de la misma forma en el FJ.
 
 ## Configuración de reloj
 
-Los dos proyectos utilizan:
+Para ambos dispositivos se usan estos valores:
 
 ```c
 PLLFBD = 38;             // M = 40
-CLKDIVbits.PLLPRE = 0;   // N1 = 2
 CLKDIVbits.PLLPOST = 0;  // N2 = 2
+CLKDIVbits.PLLPRE = 0;   // N1 = 2
 ```
-
-Con el cristal de 8 MHz:
 
 ```text
 FIN  = 8 MHz
@@ -112,7 +68,21 @@ FOSC = 160 MHz / 2 = 80 MHz
 FCY  = FOSC / 2 = 40 MHz
 ```
 
-El oscilador primario está configurado en modo `XT`, adecuado para el cristal externo de 8 MHz utilizado en la tarjeta.
+## Prueba incluida
+
+Después de inicializar el hardware, el ejemplo configura RB4 como salida:
+
+```c
+TRISBbits.TRISB4 = 0;
+```
+
+El pin permanece 500 ms en alto y 500 ms en bajo, por lo que la frecuencia de salida es 1 Hz.
+
+```text
+RB4 ── 500 ms alto ── 500 ms bajo ── repetir
+```
+
+Conecta un LED con resistencia o un osciloscopio para comprobar la ejecución.
 
 ## Uso con MPLAB X
 
@@ -122,9 +92,7 @@ El oscilador primario está configurado en modo `XT`, adecuado para el cristal e
 2. Confirma que el dispositivo del proyecto sea `dsPIC33FJ32MC204`.
 3. Selecciona XC16.
 4. Compila para generar el `.hex`.
-5. Programa por PGD1/PGC1.
-6. Desconecta el PICkit si también vas a comprobar RB0 y RB1.
-7. Recorre los GPIO con el LED de prueba.
+5. Programa por PGD1/PGC1 o carga el HEX en Proteus.
 
 ### dsPIC33EP32MC204
 
@@ -132,29 +100,25 @@ El oscilador primario está configurado en modo `XT`, adecuado para el cristal e
 2. Confirma que el dispositivo sea `dsPIC33EP32MC204`.
 3. Selecciona XC16.
 4. Compila y programa la tarjeta por PGD3/PGC3.
-5. Desconecta el PICkit si también vas a comprobar RB0 y RB1.
-6. Recorre los GPIO con el LED de prueba.
 
 ## Uso con Proteus
-
-La simulación incluida utiliza el **dsPIC33FJ32MC204**.
 
 1. Abre `test_dspic33fj32mc204.pdsprj`.
 2. Compila `test_dspic33fj.X`.
 3. Asigna al dsPIC simulado el archivo HEX generado en `dist/default/production/`.
-4. Ejecuta la simulación.
+4. Ejecuta la simulación y observa RB4.
 
-La simulación no representa automáticamente el dsPIC33EP32MC204.
+La simulación está preparada para el **dsPIC33FJ32MC204**; no representa automáticamente el comportamiento del EP.
 
 ## Adaptar la plantilla
 
-Cuando quieras utilizar esta carpeta como punto de partida para una aplicación nueva:
+Para iniciar un proyecto nuevo:
 
-1. Abre el proyecto correspondiente al MCU instalado.
-2. Conserva sus Configuration Bits e ICSP.
-3. Conserva la configuración de cristal y PLL si utilizarás los mismos 8 MHz y 40 MIPS.
-4. Sustituye la prueba GPIO por tu aplicación.
-5. Configura como analógicos únicamente los pines que realmente necesites para ADC.
+1. Conserva la rama de Configuration Bits del MCU elegido.
+2. Mantén la configuración ICSP correspondiente a la tarjeta.
+3. Sustituye únicamente el bloque de aplicación dentro de `main()`.
+4. Añade inicialización diferenciada bajo `#if` cuando un periférico cambie entre FJ y EP.
+5. Compila ambas variantes después de cualquier cambio compartido.
 
 ## Estructura
 
@@ -174,9 +138,8 @@ universal-template/
 
 | Síntoma | Comprobación |
 | --- | --- |
-| El proyecto no compila | Confirma el MCU seleccionado y la versión de XC16. |
-| El programador no detecta la tarjeta | Verifica PGD1/PGC1 para FJ o PGD3/PGC3 para EP. |
-| Ningún GPIO parpadea | Revisa alimentación, MCLR, cristal de 8 MHz y PLL. |
-| Solo un GPIO no parpadea | Revisa continuidad, soldadura, header y pista de ese pin. |
-| RB0/RB1 no se comportan como esperas | Desconecta el PICkit después de programar. |
-| Los retardos no son de 500 ms | Verifica que `FCY` sea 40 MHz. |
+| XC16 muestra el `#error` del dispositivo | Abre el proyecto correcto y verifica el MCU seleccionado. |
+| El programador no detecta la tarjeta | Revisa si corresponde PGD1/PGC1 o PGD3/PGC3. |
+| RB4 no conmuta | Comprueba reloj, alimentación y que el pin esté configurado como digital. |
+| Proteus no inicia | Confirma el dispositivo FJ y la ruta del HEX recién compilado. |
+| Los retardos son incorrectos | Verifica que `FCY` sea 40 MHz. |
