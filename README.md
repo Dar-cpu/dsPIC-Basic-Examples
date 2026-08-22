@@ -6,11 +6,28 @@ El repositorio acompaña a la tarjeta de desarrollo TECKIO dsPIC33 V1I2 y separa
 
 ## Tarjeta de desarrollo
 
+### PCB V1I2 — versión actual
+
 La PCB V1I2 admite el montaje de cualquiera de los dos microcontroladores compatibles.
 
 <p align="center">
   <img src="Images/dspic33fj_dev_V1I2.jpeg" alt="Tarjeta de desarrollo TECKIO dsPIC33 V1I2" width="680">
 </p>
+
+### PCB V1I1 — descontinuada
+
+La primera revisión se conserva como referencia histórica del desarrollo de la tarjeta. Los ejemplos nuevos y las pruebas actuales se realizan sobre la PCB V1I2.
+
+<p align="center">
+  <img src="Images/tarjeta.jpeg" alt="Tarjeta de desarrollo dsPIC33 V1I1 descontinuada" width="620">
+</p>
+
+| Revisión | Estado | Uso recomendado |
+| --- | --- | --- |
+| V1I1 | Descontinuada | Referencia histórica del desarrollo |
+| **V1I2** | **Actual** | Nuevos montajes, pruebas y ejemplos |
+
+## Compatibilidad por microcontrolador
 
 | Microcontrolador | Estado del contenido | ICSP utilizado en la tarjeta |
 | --- | --- | --- |
