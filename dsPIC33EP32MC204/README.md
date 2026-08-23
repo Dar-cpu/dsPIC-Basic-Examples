@@ -2,59 +2,68 @@
 
 [← Volver al inicio del repositorio](../README.md)
 
-Esta carpeta está reservada para ejemplos desarrollados y verificados específicamente con el **Microchip dsPIC33EP32MC204** montado en la tarjeta de desarrollo TECKIO dsPIC33 V1I2.
+Esta carpeta contiene los ejemplos desarrollados específicamente para el **Microchip dsPIC33EP32MC204** montado en la tarjeta TECKIO dsPIC33 V1I2.
 
 ## Estado actual
 
-La compatibilidad básica del dispositivo ya fue comprobada mediante la [plantilla universal](../universal-template), que configura el cristal externo de 8 MHz, el PLL, los GPIO digitales y el canal de programación correspondiente.
+La base del dispositivo ya está verificada con cristal externo de 8 MHz, PLL para `FOSC = 80 MHz`, `FCY = 40 MHz`, GPIO digitales y programación mediante **PGD3 / PGC3**.
 
-Por ahora no se duplican aquí los ejemplos del dsPIC33FJ32MC204. Aunque ambos microcontroladores pueden utilizar la misma tarjeta, existen diferencias en:
+Además, el dispositivo ya fue probado en comunicación real con otro dsPIC mediante:
 
-- Configuration Bits.
-- Registros de selección analógica.
-- Inicialización y características de algunos periféricos.
-- Peripheral Pin Select.
-- Canal ICSP utilizado por la PCB.
+- [FJ ↔ EP](../multi-device/fj-to-ep): UART, I²C y SPI.
+- [EP ↔ EP](../multi-device/ep-to-ep): UART1, I²C1 y SPI1.
 
-| Parámetro | Configuración |
+Los ejemplos individuales se irán incorporando después de validarlos físicamente.
+
+## Configuración base
+
+| Parámetro | Valor |
 | --- | --- |
 | Dispositivo | dsPIC33EP32MC204 |
 | Cristal | 8 MHz externo |
-| Frecuencia objetivo de la plantilla | `FCY = 40 MHz` |
-| Programación y depuración | PGD3 / PGC3 |
+| FOSC | 80 MHz |
+| FCY | 40 MHz |
+| Programación | PGD3 / PGC3 |
 | Compilador | XC16 |
 
-> No cambies el Configuration Bit `ICS = PGD3` sin revisar el diseño de la tarjeta, porque podrías perder la comunicación con el programador por el conector utilizado.
+> Mantén `ICS = PGD3` para esta tarjeta, salvo que el hardware se modifique expresamente.
 
-## Estructura prevista
-
-Las categorías se crearán conforme se validen ejemplos reales:
+## Ruta prevista de ejemplos individuales
 
 ```text
 dsPIC33EP32MC204/
 ├── README.md
 ├── gpio/
-├── adc/
-├── uart/
 ├── timer/
+├── uart/
+├── adc/
 ├── pwm/
+├── i2c/
 ├── spi/
-└── i2c/
+├── dht11/
+├── lcd-i2c/
+├── tft-st7735/
+├── rfid-rc522/
+└── stepper/
 ```
 
-Cada incorporación deberá incluir como mínimo:
+Las carpetas se crearán únicamente cuando exista al menos un ejemplo compilado y verificado.
 
-- Código específico para el dsPIC33EP32MC204.
-- Configuration Bits correctos.
-- Pines y conexiones documentados.
-- Procedimiento de compilación y prueba.
-- Verificación en hardware antes de publicarse.
+## Diferencias respecto al dsPIC33FJ32MC204
+
+Aunque ambos dispositivos pueden utilizar la misma PCB, no deben tratarse como equivalentes. Cambian, entre otros puntos:
+
+- Configuration Bits.
+- Registros de selección analógica (`ANSELx`).
+- Peripheral Pin Select.
+- Inicialización y disponibilidad de algunos periféricos.
+- Canal ICSP utilizado por la tarjeta.
 
 ## Comenzar un proyecto
 
 1. Crea un **Standalone Project** en MPLAB X.
 2. Selecciona `dsPIC33EP32MC204`.
 3. Selecciona XC16.
-4. Copia [`universal-template/main.c`](../universal-template/main.c).
-5. Conserva PGD3 / PGC3 para la programación de esta tarjeta.
-6. Añade únicamente la inicialización correspondiente al periférico que utilizarás.
+4. Copia [`../universal-template/main.c`](../universal-template/main.c).
+5. Conserva PGD3 / PGC3.
+6. Añade únicamente la inicialización del periférico que utilizarás.
