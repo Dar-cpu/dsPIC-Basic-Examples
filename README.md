@@ -32,7 +32,7 @@ La primera revisión se conserva como referencia histórica del desarrollo de la
 | Microcontrolador | Estado del contenido | ICSP utilizado en la tarjeta |
 | --- | --- | --- |
 | **dsPIC33FJ32MC204** | Ejemplos disponibles y probados en hardware | PGD1 / PGC1 |
-| **dsPIC33EP32MC204** | Plantilla base verificada; ejemplos específicos en desarrollo | PGD3 / PGC3 |
+| **dsPIC33EP32MC204** | Plantilla base y comunicaciones multi-device verificadas; ejemplos individuales en desarrollo | PGD3 / PGC3 |
 
 > Selecciona siempre en MPLAB X el mismo dispositivo que está montado en la tarjeta. Los Configuration Bits, registros analógicos y algunos periféricos cambian entre las familias FJ y EP.
 
@@ -42,8 +42,21 @@ La primera revisión se conserva como referencia histórica del desarrollo de la
 | --- | --- |
 | [`universal-template/`](universal-template) | Un único `main.c` compatible con FJ y EP para iniciar proyectos nuevos |
 | [`dsPIC33FJ32MC204/`](dsPIC33FJ32MC204) | Ejemplos y proyectos verificados para el dsPIC33FJ32MC204 |
-| [`dsPIC33EP32MC204/`](dsPIC33EP32MC204) | Espacio para ejemplos desarrollados y verificados específicamente para el EP |
+| [`dsPIC33EP32MC204/`](dsPIC33EP32MC204) | Ejemplos desarrollados específicamente para el dsPIC33EP32MC204 |
+| [`multi-device/`](multi-device) | Ejemplos que requieren dos microcontroladores y demuestran comunicación entre dispositivos |
 | [`Images/`](Images) | Fotografías generales de la tarjeta |
+
+## Ejemplos multi-device verificados
+
+Actualmente se ha validado comunicación entre un **dsPIC33FJ32MC204** y un **dsPIC33EP32MC204** mediante tres interfaces.
+
+| Interfaz | Configuración | Prueba |
+| --- | --- | --- |
+| UART | Comunicación bidireccional, 115200 baud, 8N1 | FJ envía `0xA5`, EP responde `0x5A` |
+| I²C | FJ master, EP slave `0x42` | Escritura `0xA5` y lectura `0x5A` |
+| SPI | FJ master, EP slave, 625 kHz | `0xA5` por MOSI y `0x5A` por MISO en full-duplex |
+
+Consulta [`multi-device/fj-to-ep/`](multi-device/fj-to-ep) para revisar conexiones, código, firmware precompilado, capturas de osciloscopio y pruebas visuales.
 
 ## Ejemplos disponibles para dsPIC33FJ32MC204
 
@@ -77,7 +90,7 @@ Consulta el [índice completo del dsPIC33FJ32MC204](dsPIC33FJ32MC204) para segui
 2. Abre MPLAB X IDE y crea un **Standalone Project**.
 3. Selecciona el microcontrolador que realmente está instalado.
 4. Selecciona el compilador XC16.
-5. Abre la carpeta del dispositivo y el ejemplo que deseas utilizar.
+5. Abre la carpeta del dispositivo o el ejemplo multi-device que deseas utilizar.
 6. Añade al proyecto los archivos indicados en su README.
 7. Compila, programa mediante el canal ICSP correspondiente y compara el resultado con la documentación.
 
@@ -93,7 +106,7 @@ universal-template/
 └── main.c
 ```
 
-No se almacenan proyectos MPLAB X generados, archivos `.elf` ni firmware `.hex` dentro de la plantilla. Los binarios precompilados solo deberían publicarse junto a un ejemplo concreto y después de verificarlo en el hardware correspondiente.
+No se almacenan proyectos MPLAB X generados, archivos `.elf` ni firmware `.hex` dentro de la plantilla. Los binarios precompilados solo se publican junto a ejemplos concretos después de verificarlos en hardware.
 
 ## Estructura del repositorio
 
@@ -120,24 +133,32 @@ dsPIC-Basic-Examples/
 │   └── projects/
 ├── dsPIC33EP32MC204/
 │   └── README.md
+├── multi-device/
+│   ├── README.md
+│   └── fj-to-ep/
+│       ├── README.md
+│       ├── uart/
+│       ├── i2c/
+│       └── spi/
 ├── LICENSE
 └── README.md
 ```
 
-Las categorías del EP se incorporarán cuando exista al menos un ejemplo específico probado. Esto evita carpetas vacías y mantiene una diferencia clara entre contenido planificado y contenido verificado.
+Las categorías individuales del EP se incorporan cuando existe al menos un ejemplo específico probado. De la misma manera, las combinaciones adicionales dentro de `multi-device/` se añaden solo después de su validación física.
 
 ## Antes de conectar hardware externo
 
 - Los GPIO trabajan con lógica de **3.3 V**.
 - Verifica la tolerancia del pin antes de aplicar una señal de 5 V.
 - Mantén las entradas ADC entre `AVSS` y `AVDD`.
-- Une GND entre la tarjeta y los módulos o instrumentos externos.
+- Une GND entre las tarjetas, módulos e instrumentos externos.
+- No unas directamente las salidas de alimentación de dos tarjetas independientes.
 - No alimentes motores, altavoces ni cargas de potencia directamente desde un GPIO.
 - Revisa las conexiones y advertencias incluidas en el README de cada ejemplo.
 
 ## Documentación de cada ejemplo
 
-Los ejemplos básicos conservan una estructura independiente y reutilizable:
+Los ejemplos de un solo dispositivo conservan una estructura independiente y reutilizable:
 
 ```text
 nombre-del-ejemplo/
@@ -147,11 +168,23 @@ nombre-del-ejemplo/
 └── docs/
 ```
 
-Los ejemplos más completos pueden añadir drivers, headers, scripts de Python, imágenes y otros recursos necesarios.
+Los ejemplos multi-device separan el firmware de cada microcontrolador:
+
+```text
+interfaz/
+├── README.md
+├── fj/
+│   ├── main.c
+│   └── dsPIC33FJ32MC204.hex
+├── ep/
+│   ├── main.c
+│   └── dsPIC33EP32MC204.hex
+└── img/
+```
 
 ## Estado del proyecto
 
-El repositorio está en desarrollo continuo. Los ejemplos del dsPIC33FJ32MC204 se conservan bajo su carpeta específica y las adaptaciones para el dsPIC33EP32MC204 se añadirán únicamente después de ser compiladas y verificadas.
+El repositorio está en desarrollo continuo. Los ejemplos se incorporan después de ser compilados y verificados en hardware; las capturas y pruebas visuales se conservan como referencia del resultado real.
 
 ## Licencia
 
