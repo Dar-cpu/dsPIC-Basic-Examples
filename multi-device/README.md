@@ -1,10 +1,12 @@
 # Multi-device
 
-Ejemplos que utilizan dos microcontroladores para demostrar comunicación real entre dispositivos de la familia dsPIC33.
+[← Volver al inicio del repositorio](../README.md)
 
-Esta sección separa el firmware de cada microcontrolador, documenta el cableado necesario y conserva capturas de osciloscopio y pruebas visuales realizadas en hardware.
+Ejemplos que utilizan **dos microcontroladores** para demostrar comunicación real entre dispositivos de la familia dsPIC33.
 
-## Combinaciones disponibles
+Esta sección separa el firmware de cada tarjeta, documenta el cableado necesario y conserva capturas de osciloscopio y pruebas visuales realizadas en hardware.
+
+## Combinaciones verificadas
 
 | Combinación | Estado | Interfaces verificadas |
 | --- | --- | --- |
@@ -13,12 +15,43 @@ Esta sección separa el firmware de cada microcontrolador, documenta el cableado
 
 ## Convención de las pruebas
 
-Para facilitar la comparación entre interfaces se utilizan los mismos bytes:
+Para facilitar la comparación entre interfaces se utilizan los mismos valores siempre que el protocolo lo permite:
 
-- `0xA5`: dato enviado desde el dispositivo iniciador o master.
-- `0x5A`: respuesta enviada por el segundo microcontrolador.
+- `0xA5`: dato transmitido por el dispositivo iniciador o master.
+- `0x5A`: respuesta del segundo microcontrolador.
 - `RB4`: LED de verificación visual en ambas tarjetas.
 
-Cada ejemplo incluye el código de ambos dispositivos, firmware `.hex` probado y evidencias de la validación cuando están disponibles.
+Cada ejemplo incluye:
 
-> Une siempre GND entre las dos tarjetas. Si ambas se alimentan independientemente, no unas directamente sus salidas de 3.3 V.
+- código fuente de ambos dispositivos;
+- firmware `.hex` precompilado y probado;
+- conexiones entre tarjetas;
+- configuración del periférico;
+- capturas de osciloscopio;
+- GIF de la prueba visual cuando está disponible.
+
+## Organización
+
+```text
+multi-device/
+├── README.md
+├── fj-to-ep/
+│   ├── README.md
+│   ├── uart/
+│   ├── i2c/
+│   └── spi/
+└── ep-to-ep/
+    ├── README.md
+    ├── uart1/
+    ├── i2c1/
+    └── spi1/
+```
+
+## Recomendaciones de conexión
+
+- Une siempre GND entre las dos tarjetas.
+- Si ambas placas se alimentan independientemente, no unas directamente sus salidas de 3.3 V.
+- Para I²C utiliza resistencias pull-up adecuadas a 3.3 V.
+- Verifica siempre TX/RX, SDO/SDI y master/slave antes de energizar el montaje.
+
+Los ejemplos de esta carpeta se publican únicamente después de ser comprobados físicamente.
